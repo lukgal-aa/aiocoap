@@ -34,6 +34,7 @@ property alone.
 
 from collections import namedtuple
 from functools import wraps
+from aiocoap.oscore import NotAProtectedMessage
 
 from .. import interfaces, credentials, oscore
 from ..numbers import UNAUTHORIZED, MAX_REGULAR_BLOCK_SIZE_EXP
@@ -193,7 +194,11 @@ class TransportOSCORE(interfaces.RequestProvider):
             # Offer secctx to switch over for reception based on the header
             # data (similar to how the server address switches over when
             # receiving a response to a request sent over multicast)
-            unprotected = oscore.verify_start(protected_response)
+            try:
+                unprotected = oscore.verify_start(protected_response)
+            except NotAProtectedMessage:
+                # when message is not protected (received an error) add received message as last response.
+                request.add_response(protected_response, is_last=True)
             secctx = secctx.context_from_response(unprotected)
 
             unprotected_response, _ = secctx.unprotect(protected_response, original_request_seqno)

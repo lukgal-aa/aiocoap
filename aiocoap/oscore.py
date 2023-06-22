@@ -735,6 +735,7 @@ class CanProtect(BaseSecurityContext, metaclass=abc.ABCMeta):
             payload += encrypted_signature
         outer_message.payload = payload
         outer_message.mtype = message.mtype
+        outer_message.token = message.token
 
         # FIXME go through options section
 
