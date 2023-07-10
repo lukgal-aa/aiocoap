@@ -998,7 +998,8 @@ class CanUnprotect(BaseSecurityContext):
                 # numbers can be serialized in the Observe option, but they are
                 # in this implementation accepted for passing around.
                 unprotected_message.opt.observe = -1 if seqno is None else seqno
-
+        unprotected_message.mtype = protected_message.mtype
+        unprotected_message.token = protected_message.token
         return unprotected_message, request_id
 
     def _get_recipient_key(self, protected_message):
